@@ -1,0 +1,19 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="e-trust tests" verbose="1" parallel="false">
+    <test name="Nopackage" >
+        <classes>
+            <class name="ru.voskhod.edu.tests.Norm_Docs">
+               <methods>
+                   <include name="files" />
+                   <include name="testHttp" />
+               </methods> 
+            </class>
+            <class name="ru.voskhod.edu.tests.Golovnoy_uc">
+                <methods>
+                    <include name="certs">
+                    </include>
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>
