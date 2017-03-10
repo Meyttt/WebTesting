@@ -42,19 +42,13 @@ public class Golovnoy_uc {
 @BeforeClass
     public void initDriver() throws IOException {
     config = new Config("config.properties");
-//    FirefoxProfile profile = new FirefoxProfile();
-//    profile.setPreference("browser.helperApps.neverAsk.saveToDisk", "application/octet-stream");
-//    profile.setPreference("browser.download.folderList", 2);
-//    profile.setPreference("browser.download.dir", "C:\\certsstest");
-    this.dir="C:\\certstest";
-    this.driver = driver;
+    this.dir =(new File("data/certs")).getAbsolutePath();
     this.ext="cer";
     System.setProperty("webdriver.chrome.driver", "data/chromedriver.exe");
     config= new Config("config.properties");
-    String downloadFilepath = "C:\\certstest";
     HashMap<String, Object> chromePrefs = new HashMap<String, Object>();
     chromePrefs.put("profile.default_content_settings.popups", 0);
-    chromePrefs.put("download.default_directory", downloadFilepath);
+    chromePrefs.put("download.default_directory", dir);
     ChromeOptions options = new ChromeOptions();
     options.setExperimentalOption("prefs", chromePrefs);
     DesiredCapabilities cap = DesiredCapabilities.chrome();

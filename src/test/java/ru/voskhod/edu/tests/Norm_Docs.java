@@ -49,25 +49,19 @@ import java.util.concurrent.TimeUnit;
 public class Norm_Docs {
     private WebDriver driver;
     private Config config;
-    private WebDriver driver1;
     String dir;
     String ext;
 @BeforeClass
 public void initDriver() throws IOException {
     config = new Config("config.properties");
-//    FirefoxProfile profile = new FirefoxProfile();
-//    profile.setPreference("browser.helperApps.neverAsk.saveToDisk", "application/octet-stream");
-//    profile.setPreference("browser.download.folderList", 2);
-//    profile.setPreference("browser.download.dir", "C:\\certsstest");
-    this.dir="C:\\doccstest";
+    this.dir =(new File("data/docs")).getAbsolutePath();
     this.driver = driver;
-    this.ext="cer";
+    this.ext="pdf";
     System.setProperty("webdriver.chrome.driver", "data/chromedriver.exe");
     config= new Config("config.properties");
-    String downloadFilepath = "C:\\doccstest";
     HashMap<String, Object> chromePrefs = new HashMap<String, Object>();
     chromePrefs.put("profile.default_content_settings.popups", 0);
-    chromePrefs.put("download.default_directory", downloadFilepath);
+    chromePrefs.put("download.default_directory", dir);
     chromePrefs.put("plugins.plugins_disabled", new String[] {
             "Adobe Flash Player",
             "Chrome PDF Viewer"
@@ -185,12 +179,11 @@ public void initDriver() throws IOException {
                 try {
                     driver.switchTo().window(windowHandleBefore);
                 } catch (NoSuchWindowException e) {
-                    System.err.println("Не удалось вернуться на предыдущую стрвницу.");
+                    System.err.println("Не удалось вернуться на предыдущую стрaницу.");
                 }
             }
         }
     }
-    this.ext = "pdf";
     File file = new File(dir);
     if (!file.exists()) System.err.println("Директория не существует");
     Thread.sleep(3000);
