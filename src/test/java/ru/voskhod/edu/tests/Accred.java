@@ -9,7 +9,9 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import  org.apache.log4j.*;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -27,10 +29,14 @@ public class Accred {
     private Config config;
     String dir;
     String ext;
+    Logger logger;
+    File file;
 @BeforeClass
 public void initDriver() throws IOException {
+    logger = Logger.getLogger(Accred.class);
     config = new Config("config.properties");
-    this.dir =(new File("data/docs")).getAbsolutePath();
+    file=new File("data/docs");
+    this.dir =file.getAbsolutePath();
     this.driver = driver;
     this.ext="pdf";
     System.setProperty("webdriver.chrome.driver", "data/chromedriver.exe");
@@ -49,11 +55,34 @@ public void initDriver() throws IOException {
     cap.setCapability(ChromeOptions.CAPABILITY, options);
     driver = new ChromeDriver(cap);
     driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+
+    File[] filelist = file.listFiles(new FilenameFilter() {
+        public boolean accept(File dir, String name) {
+            return name.toLowerCase().endsWith(ext);
+        }
+    });
+    int lenght = filelist.length;
+    for (int i = 0; i < filelist.length; i++) {
+        filelist[i].delete();
+
+    }
 }
+//@BeforeMethod
+//public  void cleanDirectory() {
+//    File[] filelist = file.listFiles(new FilenameFilter() {
+//        public boolean accept(File dir, String name) {
+//            return name.toLowerCase().endsWith(ext);
+//        }
+//    });
+//    int lenght = filelist.length;
+//    for (int i = 0; i < filelist.length; i++) {
+//        filelist[i].delete();
+//
+//    }
+//}
 @Test
     //порядок аккредитации
     public  void test_accred() throws InterruptedException {
-
     driver.get(config.get("url2_1"));
     driver.manage().timeouts().implicitlyWait(2,TimeUnit.SECONDS);
     Assert.assertEquals(driver.findElement(By.xpath("html/body/div/div[3]/div[1]")).getText(),"Данный раздел содержит информацию об установленном порядке аккредитации удостоверяющих центров");
@@ -72,9 +101,10 @@ public void initDriver() throws IOException {
     List<WebElement> targetList=driver.findElements(By.xpath("//@target/.." +
             ""));
     Assert.assertEquals(targetList.size(),3);
-    for (int i=0; i<targetList.size(); i++){
+    for (WebElement currentElement:targetList){
         String windowHandleBefore = driver.getWindowHandle();
-        targetList.get(i).click();
+        String href = currentElement.getAttribute("href");
+        currentElement.click();
         Thread.sleep(5000);
         if (driver.getWindowHandles().size()>1){
             Set<String> windows = driver.getWindowHandles();
@@ -83,21 +113,20 @@ public void initDriver() throws IOException {
                 driver.switchTo().window(windowHandle);
                 Thread.sleep(5000);
                 try {
-                    WebElement findRes = driver.findElement(By.xpath("html/body/div/pre[1]"));
-                    System.out.println("Переход на страницу выполнен.");
+                    WebElement findRes = driver.findElement(By.xpath("/html/body/header/div[1]/div/div/span[1]/span"));
+                   logger.info("Переход на страницу "+href+" выполнен.");
                 } catch (NoSuchElementException e) {
-                    System.err.println("Не удалось выполнить переход на страницу");
+                   logger.error("Не удалось выполнить переход на страницу "+href);
                 }
                 try {
                     driver.switchTo().window(windowHandleBefore);
                 } catch (NoSuchWindowException e) {
-                    System.err.println("Не удалось вернуться на предыдущую стрaницу.");
+                   logger.error("Не удалось вернуться на предыдущую стрaницу.");
                 }
             }
         }
     }
-    File file = new File(dir);
-    if (!file.exists()) System.err.println("Директория не существует");
+    if (!file.exists())logger.error("Директория не существует");
     Thread.sleep(3000);
     File[] filelist = file.listFiles(new FilenameFilter() {
         public boolean accept(File dir, String name) {

@@ -42,8 +42,8 @@ public void initDriver() throws IOException {
     test.add("^*Адрес электронной почты");
     test.add("^*Адрес веб-сайта");
     test.add("^*Адрес");
-    for (int i=0;i<test.size();i++){
-        Pattern pattern = Pattern.compile(test.get(i));
+    for (String str: test){
+        Pattern pattern = Pattern.compile(str);
         Matcher matcher = pattern.matcher(driver.findElement(By.xpath("html/body/div/div[3]")).getText());
         Assert.assertTrue(matcher.find());
     }

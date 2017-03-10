@@ -51,9 +51,11 @@ public class Norm_Docs {
     private Config config;
     String dir;
     String ext;
+    Logger logger;
 @BeforeClass
 public void initDriver() throws IOException {
     config = new Config("config.properties");
+    logger=Logger.getLogger(Norm_Docs.class);
     this.dir =(new File("data/docs")).getAbsolutePath();
     this.driver = driver;
     this.ext="pdf";
@@ -90,7 +92,7 @@ public void initDriver() throws IOException {
         });
 
     List<WebElement> docs = driver.findElements(By.xpath("html/body/div/div[3]/table/tbody/tr[.]/td[2]/table/tbody/tr[.]/td[2]/a"));
-        System.out.println(docs.size());
+        logger.info(docs.size());
     for (int i =0; i<docs.size(); i++){
         try {
             URL aURL = new URL(docs.get(i).getAttribute("href"));
@@ -104,7 +106,7 @@ public void initDriver() throws IOException {
             con.disconnect();
             driver.manage().timeouts().implicitlyWait(10, TimeUnit.MILLISECONDS);
         }catch(IndexOutOfBoundsException err){
-            System.out.println("err");
+            logger.info("err");
         }
 
     }
@@ -122,7 +124,7 @@ public void initDriver() throws IOException {
 //
 //    con.setRequestMethod("GET");
 //    con.connect();
-//    System.out.println(con.getContentLength());
+//    logger.info(con.getContentLength());
 //     HttpClient httpClient = new HttpClient();
 //    HttpRequest httpRequest =
 //    HttpGet httpGet= new HttpGet("https://e-trust.gosuslugi.ru/docs/mr_1.pdf");
@@ -130,7 +132,7 @@ public void initDriver() throws IOException {
 //    request.
 //    boolean wtf = true;
      //HttpResponse httpResponse= httpClient.execute(request,wtf);
-//    System.out.println(httpResponse.getStatus());
+//    logger.info(httpResponse.getStatus());
 
 
 }
@@ -153,12 +155,12 @@ public void initDriver() throws IOException {
     public void files() throws InterruptedException {
     driver.get(config.get("url7"));
     String logFile = "log4j.properties";
-    Logger LOG = Logger.getLogger(logFile);
 
     List<WebElement> docs = driver.findElements(By.xpath("html/body/div/div[3]/table/tbody/tr[.]/td[2]/table/tbody/tr[.]/td[2]/a"));
-    for (int i=0; i<docs.size(); i++){
+    for (WebElement doc:docs){
         String windowHandleBefore = driver.getWindowHandle();
-        docs.get(i).click();
+        String href = doc.getAttribute("href");
+        doc.click();
         Thread.sleep(5000);
         if (driver.getWindowHandles().size()>1){
             Set <String> windows = driver.getWindowHandles();
@@ -168,24 +170,24 @@ public void initDriver() throws IOException {
                 Thread.sleep(5000);
                 try {
                     WebElement findRes = driver.findElement(By.xpath("html/body/div/pre[1]"));
-                    LOG.info("Переход на страницу выполнен.");
+                    logger.info("Переход на страницу "+href+" выполнен.");
                     List<WebElement> pdfLinks = driver.findElements(By.linkText("pdf"));
                     pdfLinks.get(0).click();
                     //Что можно проверить, чтобы узнать, что страница загрузилась?
                     driver.close();
                 } catch (NoSuchElementException e) {
-                    System.err.println("На странице нет pdf файлов.");
+                    logger.error("Не удалось выполнить переход на страницу "+href);
                 }
                 try {
                     driver.switchTo().window(windowHandleBefore);
                 } catch (NoSuchWindowException e) {
-                    System.err.println("Не удалось вернуться на предыдущую стрaницу.");
+                    logger.error("Не удалось вернуться на предыдущую стрaницу.");
                 }
             }
         }
     }
     File file = new File(dir);
-    if (!file.exists()) System.err.println("Директория не существует");
+    if (!file.exists()) logger.error("Директория не существует");
     Thread.sleep(3000);
     File[] filelist = file.listFiles(new FilenameFilter() {
         public boolean accept(File dir, String name) {
