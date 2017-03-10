@@ -1,5 +1,7 @@
 package ru.voskhod.edu.tests;
 
+import org.apache.log4j.Logger;
+import org.eclipse.jetty.util.log.LoggerLog;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -20,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 public class Accreded_uc {
     private WebDriver driver;
     private Config config;
+    private Logger logger =Logger.getLogger(Accreded_uc.class);
 
 @BeforeClass
 public void initDriver() throws IOException {
@@ -34,6 +37,7 @@ public void initDriver() throws IOException {
     public void test_reestry() {
     //аккредитованные УЦ
     driver.get(config.get("url4_1"));
+    logger.info("Тестирование страницы "+config.get("url4_1"));
     Assert.assertTrue(isElementPresent(By.xpath("html/body/div/div[3]/div[1]/div[1]")));
     Assert.assertEquals(driver.findElement(By.xpath("html/body/div/div[3]/div[1]/div[1]")).getText(),
             "Данный раздел содержит перечень аккредитованных удостоверяющих центров");
@@ -41,12 +45,14 @@ public void initDriver() throws IOException {
     Assert.assertTrue(list.size() > 1);
     //Сертификаты УФО
     driver.get(config.get("url4_2"));
+    logger.info("Тестирование страницы "+config.get("url4_2"));
     Assert.assertTrue(isElementPresent(By.xpath("html/body/div[1]/div[3]/div[1]")));
     Assert.assertEquals(driver.findElement(By.xpath("html/body/div[1]/div[3]/div[1]")).getText(),
             "Данный раздел содержит реестр выданных и аннулированных уполномоченным федеральным органом квалифицированных сертификатов");
     List<WebElement> list1 = driver.findElements(By.xpath("html/body/div[1]/div[3]/table/tbody/tr[.]/td[2]"));
     Assert.assertTrue(list1.size()>1);
     driver.get(config.get("url4_3"));
+    logger.info("Тестирование страницы "+config.get("url4_3"));
     Assert.assertTrue(isElementPresent(By.xpath("html/body/div[1]/div[3]/div[1]/h3")));
     Assert.assertEquals(driver.findElement(By.xpath("html/body/div[1]/div[3]/div[1]/h3")).getText(),
             "Сертификаты ЭП, выданные аккредитованными УЦ");
@@ -54,6 +60,7 @@ public void initDriver() throws IOException {
     List<WebElement> list2 = webElement.findElements(By.tagName("input"));
     Assert.assertEquals(list2.size(),9);
     driver.get(config.get("url4_4"));
+    logger.info("Тестирование страницы "+config.get("url4_4"));
     Assert.assertTrue(isElementPresent(By.xpath("html/body/div[1]/div[3]/div[1]/h3")));
     Assert.assertEquals(driver.findElement(By.xpath("html/body/div[1]/div[3]/div[1]/h3")).getText(),
             "Переданные сертификаты");

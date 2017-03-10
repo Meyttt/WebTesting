@@ -1,5 +1,6 @@
 package ru.voskhod.edu.tests;
 
+import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -21,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 public class Ob_ident {
     private WebDriver driver;
     private Config config;
+    private Logger logger = Logger.getLogger(Ob_ident.class);
 @BeforeClass
 public void initDriver() throws IOException {
     System.setProperty("webdriver.chrome.driver", "data/chromedriver.exe");
@@ -32,6 +34,7 @@ public void initDriver() throws IOException {
 @Test
     public void  ob_ident(){
         driver.get(config.get("url5"));
+        logger.info("Тестирование страницы "+config.get("url5"));
         WebElement webElement = driver.findElement(By.xpath("html/body/div/div[3]/div[1]/form/fieldset/table/tbody"));
         List<WebElement> list = webElement.findElements(By.tagName("input"));
         Assert.assertTrue(list.size()==6);

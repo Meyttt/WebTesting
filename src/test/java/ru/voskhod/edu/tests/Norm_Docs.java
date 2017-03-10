@@ -51,14 +51,15 @@ public class Norm_Docs {
     private Config config;
     String dir;
     String ext;
-    Logger logger;
+    Logger logger =Logger.getLogger(Norm_Docs.class);
+    File file;
 @BeforeClass
 public void initDriver() throws IOException {
     config = new Config("config.properties");
-    logger=Logger.getLogger(Norm_Docs.class);
-    this.dir =(new File("data/docs")).getAbsolutePath();
-    this.driver = driver;
-    this.ext="pdf";
+    file =new File("data/docs");
+    dir=file.getAbsolutePath();
+    driver = driver;
+    ext="pdf";
     System.setProperty("webdriver.chrome.driver", "data/chromedriver.exe");
     config= new Config("config.properties");
     HashMap<String, Object> chromePrefs = new HashMap<String, Object>();
@@ -75,7 +76,14 @@ public void initDriver() throws IOException {
     cap.setCapability(ChromeOptions.CAPABILITY, options);
     driver = new ChromeDriver(cap);
     driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
-
+    File[] filelist = file.listFiles(new FilenameFilter() {
+        public boolean accept(File dir, String name) {
+            return name.toLowerCase().endsWith(ext);
+        }
+    });
+    for (int i = 0; i < filelist.length; i++) {
+        filelist[i].delete();
+    }
 }
 
 
@@ -83,6 +91,7 @@ public void initDriver() throws IOException {
     @Test
     public void testHttp() throws IOException, URISyntaxException, InterruptedException {
         driver.get(config.get("url7"));
+        logger.info("Тестирование страницы "+config.get("url7")+ " (открытие соединения на скачивание файлов)");
         HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier()
         {
             public boolean verify(String hostname, SSLSession session)
@@ -92,7 +101,6 @@ public void initDriver() throws IOException {
         });
 
     List<WebElement> docs = driver.findElements(By.xpath("html/body/div/div[3]/table/tbody/tr[.]/td[2]/table/tbody/tr[.]/td[2]/a"));
-        logger.info(docs.size());
     for (int i =0; i<docs.size(); i++){
         try {
             URL aURL = new URL(docs.get(i).getAttribute("href"));
@@ -139,6 +147,7 @@ public void initDriver() throws IOException {
 @Test
     public void norm_docs(){
     driver.get(config.get("url7"));
+    logger.info("Тестирование страницы "+config.get("url7") +" (разметка)");
     Assert.assertTrue(isElementPresent(By.xpath("html/body/div/div[3]/div")));
     Assert.assertEquals(driver.findElement(By.xpath("html/body/div/div[3]/div")).getText(),
             "Данный раздел содержит подборку нормативных документов в области использования электронной подписи и деятельности удостоверяющих центров");
@@ -154,26 +163,24 @@ public void initDriver() throws IOException {
 @Test
     public void files() throws InterruptedException {
     driver.get(config.get("url7"));
-    String logFile = "log4j.properties";
-
-    List<WebElement> docs = driver.findElements(By.xpath("html/body/div/div[3]/table/tbody/tr[.]/td[2]/table/tbody/tr[.]/td[2]/a"));
+    logger.info("Тестирование страницы "+config.get("url7")+ "  (скачивание файлов)");
+       List<WebElement> docs = driver.findElements(By.xpath("html/body/div/div[3]/table/tbody/tr[.]/td[2]/table/tbody/tr[.]/td[2]/a"));
     for (WebElement doc:docs){
         String windowHandleBefore = driver.getWindowHandle();
         String href = doc.getAttribute("href");
         doc.click();
-        Thread.sleep(5000);
+        Thread.sleep(1000);
         if (driver.getWindowHandles().size()>1){
             Set <String> windows = driver.getWindowHandles();
             windows.remove(windowHandleBefore);
             for (String windowHandle: windows) {
                 driver.switchTo().window(windowHandle);
-                Thread.sleep(5000);
+                Thread.sleep(1000);
                 try {
                     WebElement findRes = driver.findElement(By.xpath("html/body/div/pre[1]"));
                     logger.info("Переход на страницу "+href+" выполнен.");
                     List<WebElement> pdfLinks = driver.findElements(By.linkText("pdf"));
                     pdfLinks.get(0).click();
-                    //Что можно проверить, чтобы узнать, что страница загрузилась?
                     driver.close();
                 } catch (NoSuchElementException e) {
                     logger.error("Не удалось выполнить переход на страницу "+href);
@@ -186,7 +193,6 @@ public void initDriver() throws IOException {
             }
         }
     }
-    File file = new File(dir);
     if (!file.exists()) logger.error("Директория не существует");
     Thread.sleep(3000);
     File[] filelist = file.listFiles(new FilenameFilter() {

@@ -1,5 +1,6 @@
 package ru.voskhod.edu.tests;
 
+import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -20,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 public class Monitoring {
     private WebDriver driver;
     private Config config;
+    private Logger logger = Logger.getLogger(Monitoring.class);
 
 @BeforeClass
 public void initDriver() throws IOException {
@@ -32,6 +34,7 @@ public void initDriver() throws IOException {
 @Test
     public void monitoring(){
     driver.get(config.get("url6"));
+    logger.info("Тестирование страницы "+config.get("url6"));
     Assert.assertTrue(isElementPresent(By.xpath("html/body/div/div[3]/div[1]")));
     Assert.assertEquals(driver.findElement(By.xpath("html/body/div/div[3]/div[1]")).getText(),
             "Данный раздел содержит статистику мониторинга доступности сервисов аккредитованных УЦ");

@@ -84,10 +84,12 @@ public void initDriver() throws IOException {
     //порядок аккредитации
     public  void test_accred() throws InterruptedException {
     driver.get(config.get("url2_1"));
+    logger.info("Тестирование страницы "+config.get("url2_1"));
     driver.manage().timeouts().implicitlyWait(2,TimeUnit.SECONDS);
     Assert.assertEquals(driver.findElement(By.xpath("html/body/div/div[3]/div[1]")).getText(),"Данный раздел содержит информацию об установленном порядке аккредитации удостоверяющих центров");
     //аккредитованные уц
     driver.get(config.get("url2_2"));
+    logger.info("Тестирование страницы "+config.get("url2_2"));
     driver.manage().timeouts().implicitlyWait(2,TimeUnit.SECONDS);
     Assert.assertEquals(isElementPresent(By.xpath("html/body/div/div[3]/div[1]/div[1]")),true);
     Assert.assertEquals(driver.findElement(By.xpath("html/body/div/div[3]/div[1]/div[1]")).getText(),"Данный раздел содержит перечень аккредитованных удостоверяющих центров");
@@ -95,6 +97,7 @@ public void initDriver() throws IOException {
     Assert.assertTrue(list.size()>1);
     //проверки уц
     driver.get(config.get("url2_3"));
+    logger.info("Тестирование страницы "+config.get("url2_3"));
     driver.manage().timeouts().implicitlyWait(2,TimeUnit.SECONDS);
     isElementPresent(By.xpath("html/body/div/div[3]/div[1]"));
     Assert.assertEquals(driver.findElement(By.xpath("html/body/div/div[3]/div[1]")).getText(),"Данный раздел содержит информацию о порядке проверки соблюдения аккредитованными удостоверяющими центрами установленных требований");

@@ -22,6 +22,7 @@ import  org.apache.log4j.Logger;
 public class Main {
     private WebDriver driver;
     private Config config;
+    private Logger logger = Logger.getLogger(Main.class);
 
 
     @BeforeClass
@@ -38,7 +39,7 @@ public class Main {
 
     public void test_Glavnaya(){
         driver.get(config.get("url"));
-        final Logger LOG1 = Logger.getLogger(Main.class.getName());
+        logger.info("Тестирование страницы "+config.get("url"));
 //        WebElement webElement = driver.findElement(By.xpath("html/body/div/div[3]/table/tbody/tr/td[1]/div"));
 //        Assert.assertEquals(webElement.getText(),"Уполномоченный федеральный орган в области электронной подписи");
 //        WebElement webElement1 = driver.findElement(By.xpath("html/body/div/div[3]/table/tbody/tr/td[2]/div/table/tbody"));
@@ -71,19 +72,6 @@ public class Main {
 //        System.out.println(list1.size()+" = list1");
         //System.out.println(list.size());
 
-    }
-    public void simple() throws InterruptedException {
-        driver.get(config.get("url"));
-        final Logger LOG = Logger.getLogger(Main.class.getName());
-        LOG.info("test start");
-        LOG.info(driver.getTitle());
-
-        WebElement webElement = driver.findElement(By.xpath("//*[@id='mainMenu']/li[1]/a"));
-        LOG.info(webElement.getText());
-
-        Assert.assertEquals(webElement.getText(), "ГЛАВНА7Я");
-        LOG.info("test end");
-        Thread.sleep(3);
     }
 
     public boolean isElementPresent (By locator){

@@ -1,5 +1,6 @@
 package ru.voskhod.edu.tests;
 
+import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -23,6 +24,7 @@ import java.util.regex.Pattern;
 public class Contacts {
     private WebDriver driver;
     private Config config;
+    private Logger logger=Logger.getLogger(Contacts.class);
 @BeforeClass
 public void initDriver() throws IOException {
     System.setProperty("webdriver.chrome.driver", "data/chromedriver.exe");
@@ -34,6 +36,7 @@ public void initDriver() throws IOException {
 @Test
     public void contacts(){
     driver.get(config.get("url8"));
+    logger.info("Тестирование страницы "+config.get("url8"));
     ArrayList<String> test =new ArrayList<String>();
     test.add("^*Контактная информация");
     test.add("^*Справки по документам");

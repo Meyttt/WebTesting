@@ -1,18 +1,16 @@
 package ru.voskhod.edu.tests;
 
+import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.*;
@@ -37,8 +35,9 @@ import java.util.concurrent.TimeUnit;
 public class Golovnoy_uc {
     private WebDriver driver;
     private Config config;
-    String dir;
-    String ext;
+    private String dir;
+    private String ext;
+    private Logger logger = Logger.getLogger(Golovnoy_uc.class);
 @BeforeClass
     public void initDriver() throws IOException {
     config = new Config("config.properties");
@@ -58,9 +57,10 @@ public class Golovnoy_uc {
     driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
 
     }
-@Test
+@Test(description = "Скачивание и проверка сертификатов")
     public void certs() throws InterruptedException, IOException, CertificateException {
     driver.get(config.get("url3"));
+    logger.info("Тестирование страницы "+config.get("url3")+" (скачивание и проверка сертификатов)");
     driver.manage().timeouts().implicitlyWait(3,TimeUnit.SECONDS);
     List<WebElement> dates = driver.findElements(By.xpath("html/body/div/div[3]/div[2]/fieldset[.]/div/fieldset/fieldset/table/tbody/tr[4]/td[2]"));
     List<WebElement> certificatesElem = driver.findElements(By.xpath("html/body/div/div[3]/div[2]/fieldset[.]/div/fieldset/fieldset/table/tbody/tr[5]/td[2]/a"));
@@ -100,11 +100,11 @@ public class Golovnoy_uc {
 @Test
     public void test_uc(){
     driver.get(config.get("url3"));
+    logger.info("Тестирование страницы "+config.get("url3") +" (разметка)");
     Assert.assertTrue(isElementPresent(By.xpath("html/body/div/div[3]/div[1]")));
     Assert.assertEquals(driver.findElement(By.xpath("html/body/div/div[3]/div[1]")).getText(),"Данный раздел содержит информацию о головном удостоверяющем центре");
     List<WebElement> list = driver.findElements(By.xpath("html/body/div/div[3]/div[2]/fieldset[.]/legend"));
     Pattern pattern = Pattern.compile("^ПАК?");
-    String url3 = "https://e-trust.gosuslugi.ru/MainCA";
     int counter = 0;
     for (int i = 0; i<list.size(); i++){
         WebElement webElement = list.get(i);
