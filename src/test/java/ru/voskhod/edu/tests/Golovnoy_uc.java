@@ -109,7 +109,7 @@ public class Golovnoy_uc {
     for (int i = 0; i<list.size(); i++){
         WebElement webElement = list.get(i);
         Matcher matcher = pattern.matcher(webElement.getText());
-        System.out.println(webElement.getText());
+//        System.out.println(webElement.getText());
         if (matcher.find()) counter++;
     }
 //    Matcher matcher = pattern.matcher(driver.getPageSource());

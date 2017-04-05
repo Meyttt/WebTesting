@@ -37,6 +37,8 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
@@ -161,34 +163,40 @@ public void initDriver() throws IOException {
 
 }
 @Test
-    public void files() throws InterruptedException {
+    public void files() throws InterruptedException, IOException {
+        int pages =0;
     driver.get(config.get("url7"));
     logger.info("Тестирование страницы "+config.get("url7")+ "  (скачивание файлов)");
        List<WebElement> docs = driver.findElements(By.xpath("html/body/div/div[3]/table/tbody/tr[.]/td[2]/table/tbody/tr[.]/td[2]/a"));
     for (WebElement doc:docs){
         String windowHandleBefore = driver.getWindowHandle();
         String href = doc.getAttribute("href");
-        doc.click();
-        Thread.sleep(1000);
-        if (driver.getWindowHandles().size()>1){
-            Set <String> windows = driver.getWindowHandles();
-            windows.remove(windowHandleBefore);
-            for (String windowHandle: windows) {
-                driver.switchTo().window(windowHandle);
-                Thread.sleep(1000);
-                try {
-                    WebElement findRes = driver.findElement(By.xpath("html/body/div/pre[1]"));
-                    logger.info("Переход на страницу "+href+" выполнен.");
-                    List<WebElement> pdfLinks = driver.findElements(By.linkText("pdf"));
-                    pdfLinks.get(0).click();
-                    driver.close();
-                } catch (NoSuchElementException e) {
-                    logger.error("Не удалось выполнить переход на страницу "+href);
-                }
-                try {
-                    driver.switchTo().window(windowHandleBefore);
-                } catch (NoSuchWindowException e) {
-                    logger.error("Не удалось вернуться на предыдущую стрaницу.");
+        if(href.contains(".pdf")||href.contains(".rtf")){
+            downloadPdf(href);
+        }else {
+            doc.click();
+            Thread.sleep(1000);
+            if (driver.getWindowHandles().size() > 1) {
+                Set<String> windows = driver.getWindowHandles();
+                windows.remove(windowHandleBefore);
+                for (String windowHandle : windows) {
+                    driver.switchTo().window(windowHandle);
+                    Thread.sleep(1000);
+                    try {
+                        WebElement findRes = driver.findElement(By.xpath("html/body/div/pre[1]"));
+                        logger.info("Переход на страницу " + href + " выполнен.");
+                        List<WebElement> pdfLinks = driver.findElements(By.linkText("pdf"));
+                        pdfLinks.get(0).click();
+                        pages++;
+                        driver.close();
+                    } catch (NoSuchElementException e) {
+                        logger.error("Не удалось выполнить переход на страницу " + href);
+                    }
+                    try {
+                        driver.switchTo().window(windowHandleBefore);
+                    } catch (NoSuchWindowException e) {
+                        logger.error("Не удалось вернуться на предыдущую стрaницу.");
+                    }
                 }
             }
         }
@@ -204,7 +212,7 @@ public void initDriver() throws IOException {
     for (int i = 0; i<filelist.length;i++){
         filelist[i].delete();
     }
-    Assert.assertEquals(docs.size(),lenght);
+    Assert.assertEquals(docs.size(),lenght+pages);
 
 }
     public boolean isElementPresent(By locator){
@@ -220,4 +228,12 @@ public void initDriver() throws IOException {
         driver.quit();
     }
 }
+    public void downloadPdf(String currentUrl) throws IOException {
+        URL website = new URL(currentUrl);
+        String name = currentUrl.split('/' + "")[currentUrl.split('/' + "").length - 1];
+        ReadableByteChannel rbc = Channels.newChannel(website.openStream());
+        FileOutputStream fos = new FileOutputStream("data/docs/" + name);
+        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+
+    }
 }
