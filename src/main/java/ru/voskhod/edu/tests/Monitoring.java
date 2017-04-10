@@ -25,6 +25,7 @@ public class Monitoring {
 
 @BeforeClass
 public void initDriver() throws IOException {
+    SSLTool.disableCertificateValidation();
     System.setProperty("webdriver.chrome.driver", "data/chromedriver.exe");
     config= new Config("config.properties");
     WebDriver driver= new ChromeDriver();

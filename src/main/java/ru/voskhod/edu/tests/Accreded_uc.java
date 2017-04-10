@@ -67,6 +67,9 @@ public void initDriver() throws IOException {
     Assert.assertTrue(isElementPresent(By.xpath("html/body/div[1]/div[3]/div[2]/form/fieldset/div[2]/table/tbody/tr/td/div/img")));
 
 }
+public void findVoskhod(){
+
+}
 
     public boolean isElementPresent(By locator){
         List<WebElement> list = driver.findElements(locator);

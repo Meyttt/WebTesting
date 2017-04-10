@@ -34,7 +34,6 @@ public class Main {
 
 
     @BeforeClass
-
     public void initDriver() throws IOException {
         logger = Logger.getLogger(Accred.class);
         config = new Config("config.properties");
@@ -71,7 +70,6 @@ public class Main {
     }
 
     @Test
-
     public void test_Glavnaya(){
         driver.get(config.get("url"));
         logger.info("Тестирование страницы "+config.get("url"));

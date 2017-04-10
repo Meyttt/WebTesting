@@ -1,5 +1,6 @@
 package ru.voskhod.edu.tests;
 
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -13,6 +14,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.apache.log4j.*;
 
+import javax.net.ssl.*;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
@@ -39,6 +43,7 @@ public class Accred {
 
     @BeforeClass
     public void initDriver() throws IOException {
+        SSLTool.disableCertificateValidation();
         logger = Logger.getLogger(Accred.class);
         config = new Config("config.properties");
         file = new File("data/docs");
@@ -73,6 +78,8 @@ public class Accred {
 
         }
     }
+
+
 
     //@BeforeMethod
 //public  void cleanDirectory() {
@@ -111,11 +118,14 @@ public class Accred {
         List<WebElement> targetList = driver.findElements(By.xpath("//@target/.." +
                 ""));
         Assert.assertEquals(targetList.size(), 3);
+        int pdf=0;
         for (WebElement currentElement : targetList) {
             String windowHandleBefore = driver.getWindowHandle();
             String href = currentElement.getAttribute("href");
             if (href.contains(".pdf")){
                 downloadPdf(href);
+                pdf++;
+
             }else {
                 currentElement.click();
                 Thread.sleep(5000);
@@ -154,7 +164,7 @@ public class Accred {
         for (int i = 0; i < filelist.length; i++) {
             filelist[i].delete();
         }
-        Assert.assertEquals(lenght, 2);
+        Assert.assertEquals(lenght, 1);
 
 //    driver.get(config.get("url3"));driver.manage().timeouts().implicitlyWait(2,TimeUnit.SECONDS);
 //    List<WebElement> list1=driver.findElements(By.partialLinkText("Постановлением"));
@@ -162,7 +172,7 @@ public class Accred {
 //    Assert.assertEquals(driver.findElement(By.xpath("html/body/div/div[3]/div[2]/fieldset[6]/legend")).getText(),"ПАК \"УЦ 2 ИС ГУЦ\"");
     }
 
-    public boolean isElementPresent(By locator) {
+    private boolean isElementPresent(By locator) {
         List<WebElement> list = driver.findElements(locator);
         driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
         if (list.size() == 0) {
@@ -181,11 +191,8 @@ public class Accred {
 
     public void downloadPdf(String currentUrl) throws IOException {
         URL website = new URL(currentUrl);
-        String name = currentUrl.split('/' + "")[currentUrl.split('/' + "").length - 1];
-        ReadableByteChannel rbc = Channels.newChannel(website.openStream());
-        FileOutputStream fos = new FileOutputStream("data/docs/" + name);
-        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+        String name = "data/docs/"+currentUrl.split('/' + "")[currentUrl.split('/' + "").length - 1];
+        FileUtils.copyURLToFile(website,new File(name));
 
     }
-
 }
