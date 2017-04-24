@@ -37,6 +37,8 @@ public void initDriver() throws IOException {
     public void test_reestry() {
     //аккредитованные УЦ
     driver.get(config.get("url4_1"));
+    findVoskhod();
+
     logger.info("Тестирование страницы "+config.get("url4_1"));
     Assert.assertTrue(isElementPresent(By.xpath("html/body/div/div[3]/div[1]/div[1]")));
     Assert.assertEquals(driver.findElement(By.xpath("html/body/div/div[3]/div[1]/div[1]")).getText(),
@@ -68,7 +70,10 @@ public void initDriver() throws IOException {
 
 }
 public void findVoskhod(){
-
+    driver.findElement(By.xpath("//*[@id=\"FilterName\"]")).sendKeys("ВОСХОД");
+    driver.findElement(By.xpath("/html/body/div/div[3]/div[2]/form/fieldset/table/tbody/tr[3]/td/input[1]")).click();
+    driver.manage().timeouts().implicitlyWait(3,TimeUnit.SECONDS);
+    Assert.assertTrue(driver.findElements(By.xpath("/html/body/div/div[3]/table/tbody/tr[.]")).size()>1);
 }
 
     public boolean isElementPresent(By locator){

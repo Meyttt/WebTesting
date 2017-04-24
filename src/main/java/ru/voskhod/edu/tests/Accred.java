@@ -123,8 +123,10 @@ public class Accred {
             String windowHandleBefore = driver.getWindowHandle();
             String href = currentElement.getAttribute("href");
             if (href.contains(".pdf")){
-                downloadPdf(href);
-                pdf++;
+                if(pdf<1) {
+                    downloadPdf(href);
+                    pdf++;
+                }else{continue;}
 
             }else {
                 currentElement.click();
