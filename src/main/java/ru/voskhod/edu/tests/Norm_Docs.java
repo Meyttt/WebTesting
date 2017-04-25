@@ -53,20 +53,23 @@ public class Norm_Docs {
     private WebDriver driver;
     private Config config;
     String dir;
-    String ext;
+    String ext ;
     Logger logger = Logger.getLogger(Norm_Docs.class);
     File file;
+
+    public Norm_Docs(WebDriver driver) throws IOException {
+        this.driver = driver;
+        config = new Config("config.properties");
+        file = new File("data/docs");
+        dir = file.getAbsolutePath();
+        ext = "pdf";
+    }
 
     @BeforeClass
     public void initDriver() throws IOException {
         SSLTool.disableCertificateValidation();
-        config = new Config("config.properties");
-        file = new File("data/docs");
-        dir = file.getAbsolutePath();
-        driver = driver;
-        ext = "pdf";
         System.setProperty("webdriver.chrome.driver", "data/chromedriver.exe");
-        config = new Config("config.properties");
+
         HashMap<String, Object> chromePrefs = new HashMap<String, Object>();
         chromePrefs.put("profile.default_content_settings.popups", 0);
         chromePrefs.put("download.default_directory", dir);

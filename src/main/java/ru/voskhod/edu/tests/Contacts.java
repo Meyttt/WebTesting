@@ -22,13 +22,17 @@ import java.util.regex.Pattern;
  * Created by Александра on 20.04.2016.
  */
 public class Contacts {
+    public Contacts(WebDriver driver) throws IOException {
+        this.driver = driver;
+        config= new Config("config.properties");
+    }
     private WebDriver driver;
     private Config config;
     private Logger logger=Logger.getLogger(Contacts.class);
 @BeforeClass
 public void initDriver() throws IOException {
     System.setProperty("webdriver.chrome.driver", "data/chromedriver.exe");
-    config= new Config("config.properties");
+
     WebDriver driver= new ChromeDriver();
     driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
     this.driver=driver;

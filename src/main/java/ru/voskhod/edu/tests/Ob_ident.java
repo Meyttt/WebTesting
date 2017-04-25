@@ -23,10 +23,16 @@ public class Ob_ident {
     private WebDriver driver;
     private Config config;
     private Logger logger = Logger.getLogger(Ob_ident.class);
-@BeforeClass
+
+    public Ob_ident(WebDriver driver) throws IOException {
+        this.driver = driver;
+        config= new Config("config.properties");
+    }
+
+    @BeforeClass
 public void initDriver() throws IOException {
     System.setProperty("webdriver.chrome.driver", "data/chromedriver.exe");
-    config= new Config("config.properties");
+
     WebDriver driver= new ChromeDriver();
     driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
     this.driver=driver;
@@ -49,9 +55,9 @@ public void initDriver() throws IOException {
         }else return list.get(0).isEnabled()&&list.get(0).isDisplayed();
     }
 @AfterClass
-    public void closeDriver(){
+    public void closeDriver() throws InterruptedException {
     if (driver!=null){
-        driver.close();
+        Thread.sleep(3000);
         driver.quit();
 
     }

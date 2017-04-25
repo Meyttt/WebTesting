@@ -32,15 +32,18 @@ public class Main {
     File file;
     String dir, ext;
 
-
-    @BeforeClass
-    public void initDriver() throws IOException {
+    public Main(WebDriver driver) throws IOException {
+        this.driver = driver;
         logger = Logger.getLogger(Accred.class);
         config = new Config("config.properties");
         file=new File("data/docs");
         this.dir =file.getAbsolutePath();
-        this.driver = driver;
         this.ext="pdf";
+    }
+
+    @BeforeClass
+    public void initDriver() throws IOException {
+
         System.setProperty("webdriver.chrome.driver", "data/chromedriver.exe");
         config= new Config("config.properties");
         HashMap<String, Object> chromePrefs = new HashMap<String, Object>();

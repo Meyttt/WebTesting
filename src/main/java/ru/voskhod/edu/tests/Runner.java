@@ -1,6 +1,7 @@
 package ru.voskhod.edu.tests;
 
 import org.apache.log4j.Logger;
+import org.openqa.selenium.WebDriver;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -20,83 +21,113 @@ public class Runner {
             accred.initDriver();
             accred.test_accred();
         }catch (Exception e){
-            logger.error(e.getCause());
+            logger.error(e.getMessage());
+            logger.error("Ошибка на странице "+ accred.driver.getCurrentUrl());
             error=true;
-        }finally {
-            accred.closeDriver();
+        }catch (AssertionError e1){
+            logger.error(e1.getMessage());
+            logger.error("Ошибка на странице "+ accred.driver.getCurrentUrl());
+            error=true;
         }
-        Accreded_uc accreded_uc = new Accreded_uc();
+        WebDriver driver = accred.driver;
+        Accreded_uc accreded_uc = new Accreded_uc(driver);
         try {
-            accreded_uc.initDriver();
             accreded_uc.test_reestry();
         }catch (Exception e){
-            logger.error(e.getCause());
+            logger.error(e.getMessage());
+            logger.error("Ошибка на странице "+ driver.getCurrentUrl());
             error=true;
-        }finally {
-            accreded_uc.closeDriver();
+        }catch (AssertionError e1){
+            logger.error(e1.getMessage());
+            logger.error("Ошибка на странице "+ driver.getCurrentUrl());
+            error=true;
         }
-        Contacts contacts = new Contacts();
+        Contacts contacts = new Contacts(driver);
         try{
-            contacts.initDriver();
+
             contacts.contacts();
         }catch (Exception e){
-            logger.error(e.getCause());
+            logger.error(e.getMessage());
+            logger.error("Ошибка на странице "+ driver.getCurrentUrl());
             error=true;
-        }finally {
-            contacts.closeDriver();
+        }catch (AssertionError e1){
+            logger.error(e1.getMessage());
+            logger.error("Ошибка на странице "+ driver.getCurrentUrl());
+            error=true;
         }
-        Golovnoy_uc golovnoy_uc = new Golovnoy_uc();
+        Golovnoy_uc golovnoy_uc = new Golovnoy_uc(driver);
         try{
-            golovnoy_uc.initDriver();
+
             golovnoy_uc.certs();
             golovnoy_uc.test_uc();
         }catch (Exception e){
+            e.printStackTrace();
             logger.error(e.getCause());
+            logger.error("Ошибка на странице "+ driver.getCurrentUrl());
             error=true;
-        }finally {
-            golovnoy_uc.closeDriver();
+        }catch (AssertionError e1){
+            logger.error(e1.getMessage());
+            logger.error("Ошибка на странице "+ driver.getCurrentUrl());
+            error=true;
         }
-        Main main = new Main();
+        Main main = new Main(driver);
         try{
-            main.initDriver();
+
             main.test_Glavnaya();
         }catch (Exception e){
-            logger.error(e.getCause());
+            logger.error(e.getMessage());
+            logger.error("Ошибка на странице "+ driver.getCurrentUrl());
             error=true;
-        }finally {
-            main.closeDriver();
+        }catch (AssertionError e1){
+            logger.error(e1.getMessage());
+            logger.error("Ошибка на странице "+ driver.getCurrentUrl());
+            error=true;
         }
-        Monitoring monitoring = new Monitoring();
+        Monitoring monitoring = new Monitoring(driver);
         try{
-            monitoring.initDriver();
+
             monitoring.monitoring();
         }catch (Exception e){
-            logger.error(e.getCause());
+            logger.error(e.getMessage());
+            logger.error("Ошибка на странице "+ driver.getCurrentUrl());
             error=true;
-        }finally {
-            monitoring.closeDriver();
+        }catch (AssertionError e1){
+            logger.error(e1.getMessage());
+            logger.error("Ошибка на странице "+ driver.getCurrentUrl());
+            error=true;
         }
-        Norm_Docs norm_docs = new Norm_Docs();
+        Norm_Docs norm_docs = new Norm_Docs(driver);
         try{
-            norm_docs.initDriver();
+
             norm_docs.testHttp();
             norm_docs.norm_docs();
-            norm_docs.files();
+            norm_docs.oneFile();
         }catch (Exception e){
-            logger.error(e.getCause());
+            logger.error(e.getMessage());
+            logger.error("Ошибка на странице "+ driver.getCurrentUrl());
             error=true;
-        }finally {
-            norm_docs.closeDriver();
+        }catch (AssertionError e1){
+            logger.error(e1.getMessage());
+            logger.error("Ошибка на странице "+ driver.getCurrentUrl());
+            error=true;
         }
-        Ob_ident ob_ident = new Ob_ident();
+        Ob_ident ob_ident = new Ob_ident(driver);
         try{
-            ob_ident.initDriver();
+
             ob_ident.ob_ident();
         }catch (Exception e){
-            logger.error(e.getCause());
+            logger.error(e.getMessage());
+            logger.error("Ошибка на странице "+ driver.getCurrentUrl());
+            error=true;
+        }catch (AssertionError e1){
+            logger.error(e1.getMessage());
+            logger.error("Ошибка на странице "+ driver.getCurrentUrl());
             error=true;
         }finally {
             ob_ident.closeDriver();
+        }
+        if(driver!=null){
+            driver.quit();
         }
         if(!error){
             logger.warn("Проверка прошла успешно.");

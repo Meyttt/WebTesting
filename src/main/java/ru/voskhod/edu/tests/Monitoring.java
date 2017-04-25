@@ -23,11 +23,16 @@ public class Monitoring {
     private Config config;
     private Logger logger = Logger.getLogger(Monitoring.class);
 
-@BeforeClass
+    public Monitoring(WebDriver driver) throws IOException {
+        this.driver = driver;
+        config=new Config("config.properties");
+    }
+
+    @BeforeClass
 public void initDriver() throws IOException {
     SSLTool.disableCertificateValidation();
     System.setProperty("webdriver.chrome.driver", "data/chromedriver.exe");
-    config= new Config("config.properties");
+
     WebDriver driver= new ChromeDriver();
     driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
     this.driver=driver;

@@ -33,6 +33,13 @@ import java.util.concurrent.TimeUnit;
  * Created by Александра on 20.04.2016.
  */
 public class Golovnoy_uc {
+    public Golovnoy_uc(WebDriver driver) throws IOException {
+        this.driver = driver;
+        this.dir =(new File("data/docs")).getAbsolutePath();
+        this.ext="cer";
+        config = new Config("config.properties");
+    }
+
     private WebDriver driver;
     private Config config;
     private String dir;
@@ -40,9 +47,8 @@ public class Golovnoy_uc {
     private Logger logger = Logger.getLogger(Golovnoy_uc.class);
 @BeforeClass
     public void initDriver() throws IOException {
-    config = new Config("config.properties");
-    this.dir =(new File("data/certs")).getAbsolutePath();
-    this.ext="cer";
+
+
     System.setProperty("webdriver.chrome.driver", "data/chromedriver.exe");
     config= new Config("config.properties");
     HashMap<String, Object> chromePrefs = new HashMap<String, Object>();

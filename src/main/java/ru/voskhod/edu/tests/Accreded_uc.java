@@ -20,6 +20,11 @@ import java.util.concurrent.TimeUnit;
  * Created by Александра on 20.04.2016.
  */
 public class Accreded_uc {
+    public Accreded_uc(WebDriver driver) throws IOException {
+        this.driver = driver;
+        config= new Config("config.properties");
+    }
+
     private WebDriver driver;
     private Config config;
     private Logger logger =Logger.getLogger(Accreded_uc.class);
@@ -27,7 +32,7 @@ public class Accreded_uc {
 @BeforeClass
 public void initDriver() throws IOException {
     System.setProperty("webdriver.chrome.driver", "data/chromedriver.exe");
-    config= new Config("config.properties");
+
     WebDriver driver= new ChromeDriver();
     driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
     this.driver=driver;
