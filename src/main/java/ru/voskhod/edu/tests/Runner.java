@@ -3,6 +3,8 @@ package ru.voskhod.edu.tests;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.cert.CertificateException;
@@ -15,17 +17,19 @@ public class Runner {
     public static void main(String[] args) throws IOException, InterruptedException, CertificateException, URISyntaxException {
         Logger logger = Logger.getLogger(Runner.class);
         boolean error = false;
-        logger.warn("Тестирование сайта ГУЦ от "+new Date());
+        File log = new File(new File(".").getAbsolutePath()+"\\..\\"+"log.txt");
+        FileWriter fileWriter = new FileWriter(log,true);
+        logger.warn("Тестирование портала УФО от "+new Date());
         Accred accred = new Accred();
         try{
             accred.initDriver();
             accred.test_accred();
         }catch (Exception e){
-            logger.error(e.getMessage());
+            logger.error(stackTraceToString(e));
             logger.error("Ошибка на странице "+ accred.driver.getCurrentUrl());
             error=true;
         }catch (AssertionError e1){
-            logger.error(e1.getMessage());
+            logger.error(stackTraceToString(e1));
             logger.error("Ошибка на странице "+ accred.driver.getCurrentUrl());
             error=true;
         }
@@ -34,11 +38,11 @@ public class Runner {
         try {
             accreded_uc.test_reestry();
         }catch (Exception e){
-            logger.error(e.getMessage());
+            logger.error(stackTraceToString(e));
             logger.error("Ошибка на странице "+ driver.getCurrentUrl());
             error=true;
         }catch (AssertionError e1){
-            logger.error(e1.getMessage());
+            logger.error(stackTraceToString(e1));
             logger.error("Ошибка на странице "+ driver.getCurrentUrl());
             error=true;
         }
@@ -47,11 +51,11 @@ public class Runner {
 
             contacts.contacts();
         }catch (Exception e){
-            logger.error(e.getMessage());
+            logger.error(stackTraceToString(e));
             logger.error("Ошибка на странице "+ driver.getCurrentUrl());
             error=true;
         }catch (AssertionError e1){
-            logger.error(e1.getMessage());
+            logger.error(stackTraceToString(e1));
             logger.error("Ошибка на странице "+ driver.getCurrentUrl());
             error=true;
         }
@@ -66,7 +70,7 @@ public class Runner {
             logger.error("Ошибка на странице "+ driver.getCurrentUrl());
             error=true;
         }catch (AssertionError e1){
-            logger.error(e1.getMessage());
+            logger.error(stackTraceToString(e1));
             logger.error("Ошибка на странице "+ driver.getCurrentUrl());
             error=true;
         }
@@ -75,11 +79,11 @@ public class Runner {
 
             main.test_Glavnaya();
         }catch (Exception e){
-            logger.error(e.getMessage());
+            logger.error(stackTraceToString(e));
             logger.error("Ошибка на странице "+ driver.getCurrentUrl());
             error=true;
         }catch (AssertionError e1){
-            logger.error(e1.getMessage());
+            logger.error(stackTraceToString(e1));
             logger.error("Ошибка на странице "+ driver.getCurrentUrl());
             error=true;
         }
@@ -88,11 +92,11 @@ public class Runner {
 
             monitoring.monitoring();
         }catch (Exception e){
-            logger.error(e.getMessage());
+            logger.error(stackTraceToString(e));
             logger.error("Ошибка на странице "+ driver.getCurrentUrl());
             error=true;
         }catch (AssertionError e1){
-            logger.error(e1.getMessage());
+            logger.error(stackTraceToString(e1));
             logger.error("Ошибка на странице "+ driver.getCurrentUrl());
             error=true;
         }
@@ -103,11 +107,11 @@ public class Runner {
             norm_docs.norm_docs();
             norm_docs.oneFile();
         }catch (Exception e){
-            logger.error(e.getMessage());
+            logger.error(stackTraceToString(e));
             logger.error("Ошибка на странице "+ driver.getCurrentUrl());
             error=true;
         }catch (AssertionError e1){
-            logger.error(e1.getMessage());
+            logger.error(stackTraceToString(e1));
             logger.error("Ошибка на странице "+ driver.getCurrentUrl());
             error=true;
         }
@@ -116,11 +120,11 @@ public class Runner {
 
             ob_ident.ob_ident();
         }catch (Exception e){
-            logger.error(e.getMessage());
+            logger.error(stackTraceToString(e));
             logger.error("Ошибка на странице "+ driver.getCurrentUrl());
             error=true;
         }catch (AssertionError e1){
-            logger.error(e1.getMessage());
+            logger.error(stackTraceToString(e1));
             logger.error("Ошибка на странице "+ driver.getCurrentUrl());
             error=true;
         }finally {
@@ -131,8 +135,20 @@ public class Runner {
         }
         if(!error){
             logger.warn("Проверка прошла успешно.");
+            fileWriter.append("Тестирование портала УФО прошло успешно.\n");
+            fileWriter.flush();
         }else{
             logger.error("Проверка провалена.");
+            fileWriter.append("Тестирование портала УФО провалено.\n");
+            fileWriter.flush();
         }
+    }
+    public static String stackTraceToString(Throwable e){
+        StringBuilder stringBuilder = new StringBuilder();
+        for(StackTraceElement stackTraceElement:e.getStackTrace()){
+            stringBuilder.append(stackTraceElement.toString());
+            stringBuilder.append("\n");
+        }
+        return stringBuilder.toString();
     }
 }

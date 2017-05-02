@@ -116,7 +116,7 @@ public class Accred {
         Assert.assertEquals(driver.findElement(By.xpath("html/body/div/div[3]/div[1]")).getText(), "Данный раздел содержит информацию о порядке проверки соблюдения аккредитованными удостоверяющими центрами установленных требований");
         List<WebElement> targetList = driver.findElements(By.xpath("//@target/.." +
                 ""));
-        Assert.assertEquals(targetList.size(), 3);
+        Assert.assertEquals(targetList.size(), 4);
         int pdf=0;
         for (WebElement currentElement : targetList) {
             String windowHandleBefore = driver.getWindowHandle();
