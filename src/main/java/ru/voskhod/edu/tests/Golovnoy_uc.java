@@ -66,42 +66,8 @@ public class Golovnoy_uc {
 @Test(description = "Скачивание и проверка сертификатов")
     public void certs() throws InterruptedException, IOException, CertificateException {
     driver.get(config.get("url3"));
-    logger.info("Тестирование страницы "+config.get("url3")+" (скачивание и проверка сертификатов)");
+    logger.info("Тестирование страницы "+config.get("url3"));
     driver.manage().timeouts().implicitlyWait(3,TimeUnit.SECONDS);
-    List<WebElement> dates = driver.findElements(By.xpath("html/body/div/div[3]/div[2]/fieldset[.]/div/fieldset/fieldset/table/tbody/tr[4]/td[2]"));
-    List<WebElement> certificatesElem = driver.findElements(By.xpath("html/body/div/div[3]/div[2]/fieldset[.]/div/fieldset/fieldset/table/tbody/tr[5]/td[2]/a"));
-    List <WebElement> checkNumber = driver.findElements(By.xpath("html/body/div/div[3]/div[2]/fieldset[.]/div/fieldset/fieldset/table/tbody/tr[3]/td[2]"));
-    File file = new File(dir);
-    for (File myfile : file.listFiles()){
-        if (myfile.getName().endsWith(ext)) myfile.delete();
-    }
-    for (int i=0; i<certificatesElem.size();i++){
-        certificatesElem.get(i).click();
-        Thread.sleep(3000);
-        File[] files = file.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.endsWith(ext);
-            }
-        });
-        InputStream inStream = new FileInputStream(files[0]);
-        CertificateFactory cf = CertificateFactory.getInstance("X.509");
-        X509Certificate cert = (X509Certificate) cf.generateCertificate(inStream);
-        inStream.close();
-
-        Date dAfter = cert.getNotAfter();
-        Date dBefore = cert.getNotBefore();
-        SimpleDateFormat format1 = new SimpleDateFormat("dd.MM.yyyy");
-        Pattern pattern = Pattern.compile(format1.format(dBefore));
-        Matcher matcher = pattern.matcher(dates.get(i).getText());
-        Assert.assertTrue(matcher.find());
-        pattern = Pattern.compile(format1.format(dAfter));
-        matcher = pattern.matcher(dates.get(i).getText());
-        Assert.assertTrue(matcher.find());
-        BigInteger numberFact = cert.getSerialNumber();
-        files[0].delete();
-        BigInteger numberExp = new BigInteger(checkNumber.get(i).getText(),16);
-        Assert.assertEquals(numberFact, numberExp );
-    }
 }
 @Test
     public void test_uc(){
@@ -115,14 +81,10 @@ public class Golovnoy_uc {
     for (int i = 0; i<list.size(); i++){
         WebElement webElement = list.get(i);
         Matcher matcher = pattern.matcher(webElement.getText());
-//        System.out.println(webElement.getText());
         if (matcher.find()) counter++;
     }
-//    Matcher matcher = pattern.matcher(driver.getPageSource());
-//    //System.out.println(matcher.find());
-//    while (matcher.find())counter++;
+
     Assert.assertEquals(counter,8);
-    //System.out.println(list.size());
 }
 
     public boolean isElementPresent(By locator){

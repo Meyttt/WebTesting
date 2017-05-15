@@ -67,15 +67,6 @@ public class Accred {
         driver = new ChromeDriver(cap);
         driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
 
-        File[] filelist = file.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.toLowerCase().endsWith(ext);
-            }
-        });
-        for (int i = 0; i < filelist.length; i++) {
-            filelist[i].delete();
-
-        }
     }
 
 
@@ -117,61 +108,6 @@ public class Accred {
         List<WebElement> targetList = driver.findElements(By.xpath("//@target/.." +
                 ""));
         Assert.assertEquals(targetList.size(), 4);
-        int pdf=0;
-        for (WebElement currentElement : targetList) {
-            String windowHandleBefore = driver.getWindowHandle();
-            String href = currentElement.getAttribute("href");
-            if (href.contains(".pdf")){
-                if(pdf<1) {
-                    downloadPdf(href);
-                    pdf++;
-                }else{continue;}
-
-            }else {
-                currentElement.click();
-                Thread.sleep(2000);
-                if (driver.getWindowHandles().size() > 1) {
-                    Set<String> windows = driver.getWindowHandles();
-                    windows.remove(windowHandleBefore);
-                    for (String windowHandle : windows) {
-                        driver.switchTo().window(windowHandle);
-                        Thread.sleep(2000);
-                        try {
-
-                            WebElement findRes = driver.findElement(By.xpath("/html/body/header/div[1]/div/div/span[1]/span"));
-
-                            logger.info("Переход на страницу " + href + " выполнен.");
-                            driver.close();
-                        } catch (NoSuchElementException e) {
-                            logger.error("Не удалось выполнить переход на страницу " + href);
-                        }
-                        try {
-                            driver.switchTo().window(windowHandleBefore);
-                        } catch (NoSuchWindowException e) {
-                            logger.error("Не удалось вернуться на предыдущую стрaницу.");
-                        }
-
-                    }
-                }
-            }
-        }
-        if (!file.exists()) logger.error("Директория не существует");
-        Thread.sleep(3000);
-        File[] filelist = file.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.toLowerCase().endsWith(ext);
-            }
-        });
-        int lenght = filelist.length;
-        for (int i = 0; i < filelist.length; i++) {
-            filelist[i].delete();
-        }
-        Assert.assertEquals(lenght, 1);
-
-//    driver.get(config.get("url3"));driver.manage().timeouts().implicitlyWait(2,TimeUnit.SECONDS);
-//    List<WebElement> list1=driver.findElements(By.partialLinkText("Постановлением"));
-//    Assert.assertEquals(list1.size(),1);
-//    Assert.assertEquals(driver.findElement(By.xpath("html/body/div/div[3]/div[2]/fieldset[6]/legend")).getText(),"ПАК \"УЦ 2 ИС ГУЦ\"");
     }
 
     private boolean isElementPresent(By locator) {

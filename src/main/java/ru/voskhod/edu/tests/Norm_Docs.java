@@ -84,79 +84,11 @@ public class Norm_Docs {
         cap.setCapability(ChromeOptions.CAPABILITY, options);
         driver = new ChromeDriver(cap);
         driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
-        File[] filelist = file.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.toLowerCase().endsWith(ext);
-            }
-        });
-        for (int i = 0; i < filelist.length; i++) {
-            filelist[i].delete();
-        }
     }
 
 
-    @Test
-    public void testHttp() throws IOException, URISyntaxException, InterruptedException {
-        driver.get(config.get("url7"));
-        logger.info("Тестирование страницы " + config.get("url7") + " (открытие соединения на скачивание файлов)");
-        HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
-            public boolean verify(String hostname, SSLSession session) {
-                return true;
-            }
-        });
-
-        List<WebElement> docs = driver.findElements(By.xpath("html/body/div/div[3]/table/tbody/tr[.]/td[2]/table/tbody/tr[.]/td[2]/a"));
-        for (int i = 0; i < docs.size(); i++) {
-            try {
-                URL aURL = new URL(docs.get(i).getAttribute("href"));
-                if (!docs.get(i).getAttribute("href").toString().contains("https")) {
-                    aURL = new URL(aURL.toString().replace("http", "https"));
-                }
-                HttpsURLConnection con = (HttpsURLConnection) aURL.openConnection();
-                con.setRequestMethod("GET");
-                con.connect();
-                Assert.assertTrue(con.getContentLength() > 2601);
-                con.disconnect();
-                driver.manage().timeouts().implicitlyWait(10, TimeUnit.MILLISECONDS);
-            } catch (IndexOutOfBoundsException err) {
-                logger.info("err");
-            }
-
-        }
-
-//    URL aURL = new URL("https://e-trust.gosuslugi.ru/docs/fz_1.pdf");
-//        HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier()
-//
-//        {
-//            public boolean verify(String hostname, SSLSession session)
-//            {
-//                return true;
-//            }
-//        });
-//    HttpsURLConnection con = (HttpsURLConnection) aURL.openConnection();
-//
-//    con.setRequestMethod("GET");
-//    con.connect();
-//    logger.info(con.getContentLength());
-//     HttpClient httpClient = new HttpClient();
-//    HttpRequest httpRequest =
-//    HttpGet httpGet= new HttpGet("https://e-trust.gosuslugi.ru/docs/mr_1.pdf");
-//     HttpRequest request = new HttpRequest(HttpMethod.GET,aURL.toString() );
-//    request.
-//    boolean wtf = true;
-        //HttpResponse httpResponse= httpClient.execute(request,wtf);
-//    logger.info(httpResponse.getStatus());
 
 
-    }
-
-    @Test
-    public void simpleFitles() {
-        driver.get(config.get("url7"));
-        logger.info("Тестирование страницы " + config.get("url7") + "  (скачивание файлов)");
-        List<WebElement> docs = driver.findElements(By.xpath("html/body/div/div[3]/table/tbody/tr[.]/td[2]/table/tbody/tr[.]/td[2]/a"));
-
-    }
 
     @Test
     public void norm_docs() {
@@ -175,115 +107,6 @@ public class Norm_Docs {
 
     }
 
-//    @Test
-    public void files() throws InterruptedException, IOException {
-        int pages = 0;
-        driver.get(config.get("url7"));
-        logger.info("Тестирование страницы " + config.get("url7") + "  (скачивание файлов)");
-        List<WebElement> docs = driver.findElements(By.xpath("html/body/div/div[3]/table/tbody/tr[.]/td[2]/table/tbody/tr[.]/td[2]/a"));
-        for (WebElement doc : docs) {
-            String windowHandleBefore = driver.getWindowHandle();
-            String href = doc.getAttribute("href");
-            if (href.contains(".pdf") || href.contains(".rtf")) {
-                downloadPdf(href);
-            } else {
-                doc.click();
-                Thread.sleep(1000);
-                if (driver.getWindowHandles().size() > 1) {
-                    Set<String> windows = driver.getWindowHandles();
-                    windows.remove(windowHandleBefore);
-                    for (String windowHandle : windows) {
-                        driver.switchTo().window(windowHandle);
-                        Thread.sleep(1000);
-                        try {
-                            WebElement findRes = driver.findElement(By.xpath("html/body/div/pre[1]"));
-                            logger.info("Переход на страницу " + href + " выполнен.");
-                            List<WebElement> pdfLinks = driver.findElements(By.linkText("pdf"));
-                            pdfLinks.get(0).click();
-                            pages++;
-                            driver.close();
-                        } catch (NoSuchElementException e) {
-                            logger.error("Не удалось выполнить переход на страницу " + href);
-                        }
-                        try {
-                            driver.switchTo().window(windowHandleBefore);
-                        } catch (NoSuchWindowException e) {
-                            logger.error("Не удалось вернуться на предыдущую стрaницу.");
-                        }
-                    }
-                }
-            }
-        }
-        if (!file.exists()) logger.error("Директория не существует");
-        Thread.sleep(3000);
-        File[] filelist = file.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.toLowerCase().endsWith(ext);
-            }
-        });
-        int lenght = filelist.length;
-        for (int i = 0; i < filelist.length; i++) {
-            filelist[i].delete();
-        }
-        Assert.assertEquals(docs.size(), lenght + pages);
-
-    }
-    @Test
-    public void oneFile() throws IOException, InterruptedException {
-        int pages = 0;
-        int pdf=0,rtf=0;
-        driver.get(config.get("url7"));
-        logger.info("Тестирование страницы " + config.get("url7") + "  (скачивание файлов)");
-        List<WebElement> docs = driver.findElements(By.xpath("html/body/div/div[3]/table/tbody/tr[.]/td[2]/table/tbody/tr[.]/td[2]/a"));
-        for (WebElement doc : docs) {
-            String windowHandleBefore = driver.getWindowHandle();
-            String href = doc.getAttribute("href");
-            if (href.contains(".pdf")) {
-                if(pdf<1) {
-                    downloadPdf(href);
-                    pdf++;
-                }else{continue;}
-            }else {
-                doc.click();
-                Thread.sleep(1000);
-                if (driver.getWindowHandles().size() > 1) {
-                    Set<String> windows = driver.getWindowHandles();
-                    windows.remove(windowHandleBefore);
-                    for (String windowHandle : windows) {
-                        driver.switchTo().window(windowHandle);
-                        Thread.sleep(1000);
-                        try {
-                            WebElement findRes = driver.findElement(By.xpath("html/body/div/pre[1]"));
-                            logger.info("Переход на страницу " + href + " выполнен.");
-                            List<WebElement> pdfLinks = driver.findElements(By.linkText("pdf"));
-                            pdfLinks.get(0).click();
-                            pages++;
-                            driver.close();
-                        } catch (NoSuchElementException e) {
-                            logger.error("Не удалось выполнить переход на страницу " + href);
-                        }
-                        try {
-                            driver.switchTo().window(windowHandleBefore);
-                        } catch (NoSuchWindowException e) {
-                            logger.error("Не удалось вернуться на предыдущую стрaницу.");
-                        }
-                    }
-                }
-            }
-        }
-        if (!file.exists()) logger.error("Директория не существует");
-        Thread.sleep(3000);
-        File[] filelist = file.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.toLowerCase().endsWith(ext);
-            }
-        });
-        int lenght = filelist.length;
-        for (int i = 0; i < filelist.length; i++) {
-            filelist[i].delete();
-        }
-        Assert.assertEquals(lenght,1);
-    }
 
     public boolean isElementPresent(By locator) {
         List<WebElement> list = driver.findElements(locator);
@@ -300,10 +123,4 @@ public class Norm_Docs {
         }
     }
 
-    public void downloadPdf(String currentUrl) throws IOException {
-        URL website = new URL(currentUrl);
-        String name = "data/docs/"+currentUrl.split('/' + "")[currentUrl.split('/' + "").length - 1];
-        FileUtils.copyURLToFile(website,new File(name));
-
-    }
 }
