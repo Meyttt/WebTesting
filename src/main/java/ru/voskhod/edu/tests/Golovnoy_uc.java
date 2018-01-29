@@ -84,7 +84,7 @@ public class Golovnoy_uc {
         if (matcher.find()) counter++;
     }
 
-    Assert.assertEquals(counter,8);
+    Assert.assertEquals(counter,9);
 }
 
     public boolean isElementPresent(By locator){
